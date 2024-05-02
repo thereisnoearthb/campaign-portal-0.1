@@ -26,23 +26,6 @@
 
 <https://pagespeed.web.dev/>
 
-||**Sankalp** (Backend)|<p>**Khushboo**</p><p>(UI/UX)</p>|<p>**Leo**</p><p>(Frontend)</p>|<p>**DD**</p><p>(Coordination)</p>|
-| :- | :- | :- | :- | :- |
-|May (1-7)||||Create work plan and assign it|
-|May (8-14)||||Check-in|
-|May (15-21)||||Check-in|
-|May (22-28)|Clonable white label website is up|||Check-in + Review|
-|||||Check-in|
-|June (1-7)||Work with campaigners to optimize UI/UX for portal||Check-in + Review|
-|June (8-14)||||Check-in|
-|June (15-21)||||Check-in|
-|June (22-28)|Website UI/UX is optimised to campaigner needs||A Functioning Campaign Launcher |Check-in + Review|
-|||||Check-in|
-|July (1-7)||||Check-in|
-|July (8-14)||||Check-in|
-|July (15-21)|The website is intuitive to edit and SEO Optimised||<p>Climate Phone</p><p></p><p>Shortlisting has to be completed </p><p></p><p>Work plan has to be made</p><p></p><p>Devices have to be acquired</p><p></p><p>Graphene/lineage must be loaded</p><p></p><p>Experimentation/modification should begin</p>|Check-in + Review|
-|July (22-28)|Review|Review |Review|Review|
-
 **References:**
 
 |**Code**|Website|
