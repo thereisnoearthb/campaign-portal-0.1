@@ -20,6 +20,11 @@
 - Mobile View
 - Desktop view
 
+**Brand Guidelines:** 
+
+<https://drive.google.com/file/d/15W1HGNvcecbt9c3gkEUcTh5odYHV4VRA/view?usp=drive_link>
+
+
 **Optimization tests:** 
 
 <https://www.websitecarbon.com/>
