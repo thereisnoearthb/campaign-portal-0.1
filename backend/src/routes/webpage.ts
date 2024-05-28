@@ -6,7 +6,7 @@ const router = Router();
 // Route to save a webpage
 router.post('/save', async (req: Request, res: Response) => {
   const { elements } = req.body;
-
+  // console.log(elements[5].links)
   if (!elements || !Array.isArray(elements)) {
     return res.status(400).json({ message: 'Invalid input' });
   }

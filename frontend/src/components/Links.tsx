@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Input, VStack } from '@chakra-ui/react';
 
+interface Link {
+  link: string;
+  displayText: string;
+}
+
 interface LinksProps {
   index: number;
-  links?: string[];
-  updateLinks: (index: number, links: string[]) => void;
+  links?: Link[];
+  updateLinks: (index: number, links: Link[]) => void;
 }
 
 const Links: React.FC<LinksProps> = ({ index, links = [], updateLinks }) => {
-  const [linkList, setLinkList] = useState<string[]>(links);
+  const [linkList, setLinkList] = useState<Link[]>(links);
 
   useEffect(() => {
     updateLinks(index, linkList);
   }, [linkList, index, updateLinks]);
 
   const addLink = () => {
-    setLinkList([...linkList, '']);
+    setLinkList([...linkList, { link: '', displayText: '' }]);
   };
 
-  const updateLink = (linkIndex: number, value: string) => {
+  const updateLink = (linkIndex: number, field: keyof Link, value: string) => {
     const newLinks = [...linkList];
-    newLinks[linkIndex] = value;
+    newLinks[linkIndex][field] = value;
     setLinkList(newLinks);
   };
 
@@ -28,12 +33,18 @@ const Links: React.FC<LinksProps> = ({ index, links = [], updateLinks }) => {
     <Box>
       <VStack spacing={2}>
         {linkList.map((link, linkIndex) => (
-          <Input
-            key={linkIndex}
-            placeholder={`Enter link ${linkIndex + 1}`}
-            value={link}
-            onChange={(e) => updateLink(linkIndex, e.target.value)}
-          />
+          <React.Fragment key={linkIndex}>
+            <Input
+              placeholder={`Enter link ${linkIndex + 1}`}
+              value={link.link}
+              onChange={(e) => updateLink(linkIndex, 'link', e.target.value)}
+            />
+            <Input
+              placeholder={`Enter display text ${linkIndex + 1}`}
+              value={link.displayText}
+              onChange={(e) => updateLink(linkIndex, 'displayText', e.target.value)}
+            />
+          </React.Fragment>
         ))}
         <Button onClick={addLink}>Add Another Link</Button>
       </VStack>

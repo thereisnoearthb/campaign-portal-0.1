@@ -5,8 +5,16 @@ import { saveAs } from 'file-saver';
 
 interface Webpage {
   _id: string;
-  elements: { type: string, content?: string, twitterLink?: string, emailLink?: string, links?: string[] }[];
+  elements: {
+    type: string;
+    content?: string;
+    twitterLink?: string;
+    emailLink?: string;
+    links?: { link: string; displayText: string }[] | undefined;
+    partnerLogos?: { partnerName: string; partnerSiteLink: string; partnerLogoLink: string; displayText: string }[] | undefined;
+  }[];
 }
+
 
 const App: React.FC = () => {
   const [webpages, setWebpages] = useState<Webpage[]>([]);
@@ -16,6 +24,7 @@ const App: React.FC = () => {
       try {
         const response = await axios.get('http://localhost:5000/api/webpage/webpages');
         setWebpages(response.data);
+        // console.log(response.data[3].elements[5]);
       } catch (error) {
         console.error('Error fetching webpages:', error);
       }
@@ -35,7 +44,14 @@ const App: React.FC = () => {
     saveAs(blob, 'generated_page.html');
   };
 
-  const generateHTMLSnippet = (element: { type: string, content?: string, twitterLink?: string, emailLink?: string, links?: string[] }) => {
+  const generateHTMLSnippet = (element: {
+    type: string;
+    content?: string;
+    twitterLink?: string;
+    emailLink?: string;
+    links?: { link: string; displayText: string }[] | undefined;
+    partnerLogos?:{ partnerName: string; partnerSiteLink: string; partnerLogoLink: string; displayText: string }[] | undefined;
+}) => {
     switch (element.type) {
       case 'heading':
         return `<!-- heading -->
@@ -56,19 +72,23 @@ const App: React.FC = () => {
 
       case 'carousel':
         return `<!-- carousel -->
-                  <div class="card-image large">
-                    <div
-                      class="main-carousel carousel carousel-slider no-autoinit"
-                      data-flickity='{ "wrapAround": true,"contain":true,"imagesLoaded": true, "percentPosition": false }'
-                    >
-                      ${element.links?.map(link => `<div class="carousel-cell"><img src="${link}" alt="" style=" background-size: cover; width: 100%"/></div>`).join('') || ''}
-                    </div>
-                  </div>
-                <!-- carousel ends -->`;
+        <div class="card-image large">
+          <div
+            class="main-carousel carousel carousel-slider no-autoinit"
+            data-flickity='{ "wrapAround": true,"contain":true,"imagesLoaded": true, "percentPosition": false }'
+          >
+            ${element.links?.map(link => {
+            return `<div class="carousel-cell"><img src="${link.link}" alt="${link.displayText}" style=" background-size: cover; width: 100%"/></div>`;
+        }).join('') || ''}
+          </div>
+        </div>
+      <!-- carousel ends -->`;
       case 'links':
         return `<!-- links (outgoing) -->
-                  ${element.links?.map(link => `<a class="link" target="_blank" href="${link}">${link}</a>`).join('') || ''}
-                <!-- links ends -->`;
+        ${element.links?.map(link => {
+            return `<a class="link" target="_blank" href="${link.link}">${link.displayText}</a>`;  
+        }).join('') || ''}
+      <!-- links ends -->`;
       case 'youtubeVideo':
         return `<!-- youtube -->
                   <div class="video-container">
@@ -77,16 +97,25 @@ const App: React.FC = () => {
                 <!-- youtube ends -->`;
       case 'partnerLogos':
         return `<!-- partner logo -->
-                <div class="org-logo">
-                  ${element.links?.map(link => `<div class="org-img-div column"><img class="org-img" src="${link}" alt="Partner Logo" loading="lazy"/><a class="img-link" target="_blank" href="www.google.com">PARTNER NAME</a></div>`).join('') || ''}
-                </div>
-                <!-- partner logo ends -->`;
+        <div class="org-logo">
+          ${element.partnerLogos?.map(link => {
+            return `<div class="org-img-div column"><img class="org-img" src="${link.partnerLogoLink}" alt="${link.displayText}" loading="lazy"/><a class="img-link" target="_blank" href="${link.partnerSiteLink}">${link.partnerName}</a></div>`;
+        }).join('') || ''}
+        </div>
+        <!-- partner logo ends -->`;
       default:
         return '';
     }
   };
 
-  const generateHTMLPage = (elements: { type: string, content?: string, twitterLink?: string, emailLink?: string, links?: string[] }[]) => {
+  const generateHTMLPage = (elements: {
+    type: string;
+    content?: string;
+    twitterLink?: string;
+    emailLink?: string;
+    links?: { link: string; displayText: string }[] | undefined;
+    partnerLogos?:{ partnerName: string; partnerSiteLink: string; partnerLogoLink: string; displayText: string }[]|undefined;
+}[])  => {
     const htmlSnippets = elements.map(element => generateHTMLSnippet(element)).join('\n');
     return `
       <!DOCTYPE html>

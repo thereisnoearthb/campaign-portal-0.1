@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
-console.log("The mongodb URI is ",MONGODB_URI);
+// console.log("The mongodb URI is ",MONGODB_URI);
 
 app.use(cors());
 app.use(bodyParser.json());
