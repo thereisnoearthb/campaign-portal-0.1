@@ -50,8 +50,8 @@ const App: React.FC = () => {
     twitterLink?: string;
     emailLink?: string;
     links?: { link: string; displayText: string }[] | undefined;
-    partnerLogos?:{ partnerName: string; partnerSiteLink: string; partnerLogoLink: string; displayText: string }[] | undefined;
-}) => {
+    partnerLogos?: { partnerName: string; partnerSiteLink: string; partnerLogoLink: string; displayText: string }[] | undefined;
+  }) => {
     switch (element.type) {
       case 'heading':
         return `<!-- heading -->
@@ -78,7 +78,7 @@ const App: React.FC = () => {
             data-flickity='{ "wrapAround": true,"contain":true,"imagesLoaded": true, "percentPosition": false }'
           >
             ${element.links?.map(link => {
-            return `<div class="carousel-cell"><img src="${link.link}" alt="${link.displayText}" style=" background-size: cover; width: 100%"/></div>`;
+          return `<div class="carousel-cell"><img src="${link.link}" alt="${link.displayText}" style=" background-size: cover; width: 100%"/></div>`;
         }).join('') || ''}
           </div>
         </div>
@@ -86,7 +86,7 @@ const App: React.FC = () => {
       case 'links':
         return `<!-- links (outgoing) -->
         ${element.links?.map(link => {
-            return `<a class="link" target="_blank" href="${link.link}">${link.displayText}</a>`;  
+          return `<a class="link" target="_blank" href="${link.link}">${link.displayText}</a>`;
         }).join('') || ''}
       <!-- links ends -->`;
       case 'youtubeVideo':
@@ -99,7 +99,7 @@ const App: React.FC = () => {
         return `<!-- partner logo -->
         <div class="org-logo">
           ${element.partnerLogos?.map(link => {
-            return `<div class="org-img-div column"><img class="org-img" src="${link.partnerLogoLink}" alt="${link.displayText}" loading="lazy"/><a class="img-link" target="_blank" href="${link.partnerSiteLink}">${link.partnerName}</a></div>`;
+          return `<div class="org-img-div column"><img class="org-img" src="${link.partnerLogoLink}" alt="${link.displayText}" loading="lazy"/><a class="img-link" target="_blank" href="${link.partnerSiteLink}">${link.partnerName}</a></div>`;
         }).join('') || ''}
         </div>
         <!-- partner logo ends -->`;
@@ -114,8 +114,8 @@ const App: React.FC = () => {
     twitterLink?: string;
     emailLink?: string;
     links?: { link: string; displayText: string }[] | undefined;
-    partnerLogos?:{ partnerName: string; partnerSiteLink: string; partnerLogoLink: string; displayText: string }[]|undefined;
-}[])  => {
+    partnerLogos?: { partnerName: string; partnerSiteLink: string; partnerLogoLink: string; displayText: string }[] | undefined;
+  }[]) => {
     const htmlSnippets = elements.map(element => generateHTMLSnippet(element)).join('\n');
     return `
       <!DOCTYPE html>
@@ -189,6 +189,7 @@ const App: React.FC = () => {
             </Button>
           ))}
         </VStack>
+        <a href="https://gist.github.com/sankalpie/4bf316c7f7f8e7b9ddbb51c3c409aae7" target='_blank' rel='noreferrer' style={{ cursor: 'pointer', color: 'blue' }}>Download css file for the generated HTML here</a>
       </Box>
     </ChakraProvider>
   );
