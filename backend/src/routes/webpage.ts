@@ -30,4 +30,24 @@ router.get('/webpages', async (req: Request, res: Response) => {
   }
 });
 
+// Route to update a webpage
+router.put('/update/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { elements } = req.body;
+
+  if (!elements || !Array.isArray(elements)) {
+    return res.status(400).json({ message: 'Invalid input' });
+  }
+
+  try {
+    const updatedWebpage = await Webpage.findByIdAndUpdate(id, { elements }, { new: true });
+    if (!updatedWebpage) {
+      return res.status(404).json({ message: 'Webpage not found' });
+    }
+    res.status(200).json({ message: 'Webpage updated successfully', updatedWebpage });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
 export default router;

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ChakraProvider, Box, VStack, Button } from '@chakra-ui/react';
+import { ChakraProvider, Box, VStack, Button, Flex } from '@chakra-ui/react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
+import EditWebpageForm from './components/EditWebpageForm';
 
 interface Webpage {
   _id: string;
@@ -15,16 +16,15 @@ interface Webpage {
   }[];
 }
 
-
 const App: React.FC = () => {
   const [webpages, setWebpages] = useState<Webpage[]>([]);
+  const [selectedWebpage, setSelectedWebpage] = useState<Webpage | null>(null);
 
   useEffect(() => {
     const fetchWebpages = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/webpage/webpages');
         setWebpages(response.data);
-        // console.log(response.data[3].elements[5]);
       } catch (error) {
         console.error('Error fetching webpages:', error);
       }
@@ -43,6 +43,23 @@ const App: React.FC = () => {
     const blob = new Blob([htmlPage], { type: 'text/html' });
     saveAs(blob, 'generated_page.html');
   };
+
+  //editing functionality start
+  const handleEditClick = (webpage: Webpage) => {
+    if (selectedWebpage && selectedWebpage._id === webpage._id) {
+      setSelectedWebpage(null);
+    } else {
+      setSelectedWebpage(webpage);
+    }
+  };
+
+  const handleUpdate = (updatedWebpage: Webpage) => {
+    setWebpages((prev) =>
+      prev.map((webpage) => (webpage._id === updatedWebpage._id ? updatedWebpage : webpage))
+    );
+    setSelectedWebpage(null);
+  };
+  //editing functionality end
 
   const generateHTMLSnippet = (element: {
     type: string;
@@ -183,13 +200,20 @@ const App: React.FC = () => {
     <ChakraProvider>
       <Box p={4}>
         <VStack spacing={4} align="stretch">
-          {webpages.map(webpage => (
-            <Button key={webpage._id} onClick={() => handleButtonClick(webpage.elements)}>
-              {getHeading(webpage.elements)}
-            </Button>
+          {webpages.map((webpage) => (
+            <Flex key={webpage._id} borderWidth={1} borderRadius="md" p={4} align="center" justify="space-between">
+              <Button onClick={() => handleButtonClick(webpage.elements)}>
+                {getHeading(webpage.elements)}
+              </Button>
+              <Button onClick={() => handleEditClick(webpage)} colorScheme="blue">
+                {selectedWebpage && selectedWebpage._id === webpage._id ? 'Close' : 'Edit'}
+              </Button>
+            </Flex>
           ))}
         </VStack>
-        <a href="https://gist.github.com/sankalpie/4bf316c7f7f8e7b9ddbb51c3c409aae7" target='_blank' rel='noreferrer' style={{ cursor: 'pointer', color: 'blue' }}>Download css file for the generated HTML here</a>
+        {selectedWebpage && (
+          <EditWebpageForm webpage={selectedWebpage} onUpdate={handleUpdate} />
+        )}
       </Box>
     </ChakraProvider>
   );
