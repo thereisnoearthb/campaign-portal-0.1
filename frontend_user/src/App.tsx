@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChakraProvider, Box, VStack, Button, Flex } from '@chakra-ui/react';
+import { ChakraProvider, Box, VStack, Button, Flex, Heading, FormControl, FormLabel, Input, Text } from '@chakra-ui/react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import EditWebpageForm from './components/EditWebpageForm';
@@ -19,6 +19,52 @@ interface Webpage {
 const App: React.FC = () => {
   const [webpages, setWebpages] = useState<Webpage[]>([]);
   const [selectedWebpage, setSelectedWebpage] = useState<Webpage | null>(null);
+
+  //login functionality
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    // Check local storage for token
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Verify token by making request to protected route
+      axios.get('http://localhost:5000/api/auth/protected', {
+        headers: { Authorization: token }
+      }).then(response => {
+        if (response.status === 200) {
+          setIsLoggedIn(true);
+        }
+      }).catch(() => {
+        localStorage.removeItem('token'); 
+      });
+    }
+  }, []);
+
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        username,
+        password,
+      });
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.token); // token store
+        setIsLoggedIn(true);
+      }
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage((error as { response: { data: { message: string } } }).response?.data?.message || 'Login failed');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('token'); 
+  };
+  //login functionality ends
 
   useEffect(() => {
     const fetchWebpages = async () => {
@@ -199,21 +245,62 @@ const App: React.FC = () => {
   return (
     <ChakraProvider>
       <Box p={4}>
-        <VStack spacing={4} align="stretch">
-          {webpages.map((webpage) => (
-            <Flex key={webpage._id} borderWidth={1} borderRadius="md" p={4} align="center" justify="space-between">
-              <Button onClick={() => handleButtonClick(webpage.elements)}>
-                {getHeading(webpage.elements)}
-              </Button>
-              <Button onClick={() => handleEditClick(webpage)} colorScheme="blue">
-                {selectedWebpage && selectedWebpage._id === webpage._id ? 'Close' : 'Edit'}
-              </Button>
+        {isLoggedIn ? (
+          <>
+            <Flex borderWidth={1} borderRadius="md" p={2} align="center" justify="space-between">
+              <a href="http://localhost:3000" style={{ color: 'blue' }} target='_blank'>Access Element Selector Portal here</a>
+              <Button mt={4} colorScheme="teal" onClick={handleLogout}>Logout</Button>
             </Flex>
-          ))}
-        </VStack>
-        {selectedWebpage && (
-          <EditWebpageForm webpage={selectedWebpage} onUpdate={handleUpdate} />
-        )}
+            <br /> <br />
+            <VStack spacing={4} align="stretch">
+              {webpages.map((webpage) => (
+                <Flex key={webpage._id} borderWidth={1} borderRadius="md" p={4} align="center" justify="space-between">
+                  <Button onClick={() => handleButtonClick(webpage.elements)}>
+                    {getHeading(webpage.elements)}
+                  </Button>
+                  <Button onClick={() => handleEditClick(webpage)} colorScheme="blue">
+                    {selectedWebpage && selectedWebpage._id === webpage._id ? 'Close' : 'Edit'}
+                  </Button>
+                </Flex>
+              ))}
+            </VStack>
+            {selectedWebpage && (
+              <EditWebpageForm webpage={selectedWebpage} onUpdate={handleUpdate} />
+            )}
+          </>
+        )
+          :
+          (
+            <Box>
+              <Heading>Please log in</Heading>
+              <form onSubmit={handleLogin}>
+                <FormControl id="username" mb={4}>
+                  <FormLabel>Username:</FormLabel>
+                  <Input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl id="password" mb={4}>
+                  <FormLabel>Password:</FormLabel>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </FormControl>
+                <Flex borderWidth={1} borderRadius="md" p={2} align="center" justify="space-between">
+                  <Button type="submit" colorScheme="teal">Login</Button>
+                  <a href="http://localhost:3000" style={{ color: 'blue' }} target='_blank'>Access Element Selector Portal here</a>
+                </Flex>
+              </form>
+              <br />
+              {message && <Text mt={4}>{message}</Text>}
+            </Box>
+          )
+
+        }
       </Box>
     </ChakraProvider>
   );
